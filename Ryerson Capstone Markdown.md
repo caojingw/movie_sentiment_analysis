@@ -1,49 +1,28 @@
-Ryerson Capstone
-Libraries
+---
+title: "Ryerson Capstone"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Libraries
+```{r}
+set.seed(1234)
 library(tidyverse)
-## -- Attaching packages ---------------------------------------------------------------- tidyverse 1.2.1 --
-## v ggplot2 3.0.0     v purrr   0.2.5
-## v tibble  1.4.2     v dplyr   0.7.6
-## v tidyr   0.8.1     v stringr 1.3.1
-## v readr   1.1.1     v forcats 0.3.0
-## -- Conflicts ------------------------------------------------------------------- tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()
 library(tidytext)
 library(ggplot2)
 library(wordcloud)
-## Loading required package: RColorBrewer
 library(tm)
-## Loading required package: NLP
-## 
-## Attaching package: 'NLP'
-## The following object is masked from 'package:ggplot2':
-## 
-##     annotate
 library(e1071)
 library(caret)
-## Loading required package: lattice
-## 
-## Attaching package: 'caret'
-## The following object is masked from 'package:purrr':
-## 
-##     lift
 library(maxent)
-## Loading required package: SparseM
-## 
-## Attaching package: 'SparseM'
-## The following object is masked from 'package:base':
-## 
-##     backsolve
-loading datasets
+```
+
+## loading datasets
+```{r}
 train<-read_tsv("C:/Users/james/OneDrive/Ryerson/Capstone/all/train.tsv")
-## Parsed with column specification:
-## cols(
-##   PhraseId = col_integer(),
-##   SentenceId = col_integer(),
-##   Phrase = col_character(),
-##   Sentiment = col_integer()
-## )
 sentiment0<-train[which(train$Sentiment==0),][1:1000,]
 sentiment1<-train[which(train$Sentiment==1),][1:1000,]
 sentiment2<-train[which(train$Sentiment==2),][1:1000,]
@@ -51,30 +30,31 @@ sentiment3<-train[which(train$Sentiment==3),][1:1000,]
 sentiment4<-train[which(train$Sentiment==4),][1:1000,]
 train<-rbind(sentiment0,sentiment1,sentiment2,sentiment3,sentiment4)
 train$Sentiment<-factor(train$Sentiment)
-view and exam both datasets
+```
+
+## view and exam both datasets
+```{r}
 glimpse(train)
-## Observations: 5,000
-## Variables: 4
-## $ PhraseId   <int> 102, 104, 158, 160, 202, 209, 211, 262, 265, 266, 3...
-## $ SentenceId <int> 3, 3, 5, 5, 7, 7, 7, 10, 10, 10, 12, 16, 32, 32, 34...
-## $ Phrase     <chr> "would have a hard time sitting through this one", ...
-## $ Sentiment  <fct> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...
 length(unique(train$PhraseId))
-## [1] 5000
-Missing values
+```
+
+## Missing values
+```{r}
 apply(train, 2, function(x) sum(is.na(x)))
-##   PhraseId SentenceId     Phrase  Sentiment 
-##          0          0          1          0
+```
+
 We examed the dataset and found 1 missing value. It is not recommended to remove it as it would lose the prediction power.
 
-Distribution of the sentiment score
+## Distribution of the sentiment score
+```{r}
 ggplot(train,aes(x=Sentiment))+
   geom_bar() +
   ggtitle("Distribution of the sentiment score") +
   theme_classic()
+```
 
-
-Average # of phrase and word count of a sentence
+## Average # of phrase and word count of a sentence
+```{r}
 train_addition<-train %>%
   mutate(length = str_length(Phrase),
          ncap = str_count(Phrase, "[A-Z]"),
@@ -83,17 +63,16 @@ train_addition<-train %>%
          nsymb = str_count(Phrase, "&|@|#|\\$|%|\\*|\\^"))
 
 apply(train_addition[,c(5:9)],2, function(x) mean(x,na.rm = TRUE))
-##     length       ncap     npunct      nword      nsymb 
-## 46.3350670  0.6403281  1.0138028  7.8909782  0.0010002
+
 train %>%
   group_by(SentenceId) %>%
   summarise(n=n()) %>%
   summarise(mean=mean(n))
-## # A tibble: 1 x 1
-##    mean
-##   <dbl>
-## 1  6.82
-Top & Bottom 10 common words in train.
+```
+
+
+## Top & Bottom 10 common words in train.
+```{r}
 topten_commonwords = function(train)
 {
     train %>%
@@ -116,16 +95,20 @@ Bottomten_commonwords = function(train)
     with(wordcloud(word,n ,max.words = 10, main="Bottom 10 common words"))}
 
 Bottomten_commonwords(train)
+```
 
-
-train data without pre-processing
+# train data without pre-processing
+```{r}
 train_corpus<-Corpus(VectorSource(train$Phrase))
 
 train_dtm<-DocumentTermMatrix(train_corpus)
 train_sparse<-as.compressed.matrix(train_dtm)
 train_remove<-removeSparseTerms(train_dtm,sparse = 0.999)
 train_m<-as.data.frame(as.matrix(train_remove))
-train data with pre-processing
+```
+
+# train data with pre-processing
+```{r}
 train_corpus<-Corpus(VectorSource(train$Phrase))
 
 clean_corpus <- function(x){
@@ -136,19 +119,15 @@ clean_corpus <- function(x){
   return(x)
 }
 train_corpus_cleaned<-clean_corpus(train_corpus)
-## Warning in tm_map.SimpleCorpus(x, stripWhitespace): transformation drops
-## documents
-## Warning in tm_map.SimpleCorpus(x, removePunctuation): transformation drops
-## documents
-## Warning in tm_map.SimpleCorpus(x, content_transformer(tolower)):
-## transformation drops documents
-## Warning in tm_map.SimpleCorpus(x, removeWords, stopwords("en")):
-## transformation drops documents
 train_dtm_cleaned<-DocumentTermMatrix(train_corpus_cleaned)
 train_sparse_cleaned<-as.compressed.matrix(train_dtm_cleaned)
 train_remove_cleaned<-removeSparseTerms(train_dtm_cleaned,sparse = 0.999)
 train_m_cleaned<-as.data.frame(as.matrix(train_remove_cleaned))
-training data without pre-processing & 10-fold cross validation
+```
+
+
+# training data without pre-processing & 10-fold cross validation
+```{r}
 n<-nrow(train_sparse_cleaned)
 K<-10
 segment<-n%/%K
@@ -167,7 +146,7 @@ for (k in 1:K) {
 
 accuracy.cv<-mean(accuracy)
 accuracy.cv
-## [1] 0.6328
+
 #Naive Bayes
 accuracy_nb<-numeric(0)
 for (k in 1:K) {
@@ -178,7 +157,7 @@ for (k in 1:K) {
 }
 accuracy.cv_nb<-mean(accuracy_nb)
 accuracy.cv_nb
-## [1] 0.646
+
 #SVM
 accuracy_svm<-numeric(0)
 for (k in 1:K) {
@@ -189,8 +168,10 @@ for (k in 1:K) {
 }
 accuracy.cv_svm<-mean(accuracy_svm)
 accuracy.cv_svm
-## [1] 0.646
-training data with pre-processing & 10-fold cross validation
+```
+
+# training data with pre-processing & 10-fold cross validation
+```{r}
 n<-nrow(train_sparse)
 K<-10
 segment<-n%/%K
@@ -209,7 +190,7 @@ for (k in 1:K) {
 
 accuracy.cv<-mean(accuracy)
 accuracy.cv
-## [1] 0.642
+
 #Naive Bayes
 accuracy_nb<-numeric(0)
 for (k in 1:K) {
@@ -220,7 +201,7 @@ for (k in 1:K) {
 }
 accuracy.cv_nb<-mean(accuracy_nb)
 accuracy.cv_nb
-## [1] 0.65
+
 #SVM
 accuracy_svm<-numeric(0)
 for (k in 1:K) {
@@ -231,4 +212,4 @@ for (k in 1:K) {
 }
 accuracy.cv_svm<-mean(accuracy_svm)
 accuracy.cv_svm
-## [1] 0.65
+```
