@@ -102,7 +102,7 @@ Bottomten_commonwords(train)
 ```
 ![](Ryerson_Capstone_Markdown_files/unnamed-chunk-7-2.png)
 
-# train data without pre-processing
+# Converting to Matrix without pre-processing
 ```{r}
 train_corpus<-Corpus(VectorSource(train$Phrase))
 
@@ -112,7 +112,7 @@ train_remove<-removeSparseTerms(train_dtm,sparse = 0.999)
 train_m<-as.data.frame(as.matrix(train_remove))
 ```
 
-# train data with pre-processing
+# Converting to Matrix with pre-processing
 ```{r}
 train_corpus<-Corpus(VectorSource(train$Phrase))
 
@@ -218,3 +218,4 @@ for (k in 1:K) {
 accuracy.cv_svm<-mean(accuracy_svm)
 accuracy.cv_svm
 ```
+![](Ryerson_Capstone_Markdown_files/unnamed-chunk-8-1.png)
