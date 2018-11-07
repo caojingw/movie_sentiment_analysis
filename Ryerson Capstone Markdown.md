@@ -218,4 +218,5 @@ for (k in 1:K) {
 accuracy.cv_svm<-mean(accuracy_svm)
 accuracy.cv_svm
 ```
+
 ![](Ryerson_Capstone_Markdown_files/unnamed-chunk-8-1.png)
