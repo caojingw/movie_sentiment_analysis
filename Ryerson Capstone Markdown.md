@@ -85,9 +85,10 @@ topten_commonwords = function(train)
     with(wordcloud(word,n ,max.words = 10, main="Top 10 common words"))}
 
 topten_commonwords(train)
-
+```
 ![](Ryerson_Capstone_Markdown_files/unnamed-chunk-7-1.png)
 
+```{r}
 Bottomten_commonwords = function(train)
 {
     train %>%
@@ -130,7 +131,7 @@ train_m_cleaned<-as.data.frame(as.matrix(train_remove_cleaned))
 ```
 
 
-# training data without pre-processing & 10-fold cross validation
+# Training data without pre-processing & 10-fold cross validation
 ```{r}
 n<-nrow(train_sparse_cleaned)
 K<-10
@@ -174,7 +175,7 @@ accuracy.cv_svm<-mean(accuracy_svm)
 accuracy.cv_svm
 ```
 
-# training data with pre-processing & 10-fold cross validation
+# Training data with pre-processing & 10-fold cross validation
 ```{r}
 n<-nrow(train_sparse)
 K<-10
