@@ -219,4 +219,4 @@ accuracy.cv_svm<-mean(accuracy_svm)
 accuracy.cv_svm
 ```
 
-![](Ryerson_Capstone_Markdown_files/unnamed-chunk-8-1.png)
+![](Ryerson_Capstone_Markdown_files/unnamed-chunk-8-1.PNG)
