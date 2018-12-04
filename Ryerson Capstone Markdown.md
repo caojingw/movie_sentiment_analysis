@@ -86,7 +86,7 @@ apply(train_addition[,c(17:21)],2, function(x) sum(x,na.rm = TRUE))
 
 In this dataset, we can see that there are 39448 actual words, 5068 punctations and only 5 symbols.
 
-![](Ryerson_Capstone_Markdown_files/unnamed-chunk-6-1.png)
+![](Ryerson_Capstone_Markdown_files/unnamed-chunk-6-1.PNG)
 
 ## Top & Bottom 10 words
 ```{r}
@@ -380,13 +380,7 @@ accuracy.cv_svm2<-mean(accuracy_svm2,na.rm = T)
 f1_svm_2<-mean(f1_svm2,na.rm = T)
 accuracy.cv_svm2
 f1_svm_2
-
-
-![](Ryerson_Capstone_Markdown_files/unnamed-chunk-8-1.png)
-
-![](Ryerson_Capstone_Markdown_files/unnamed-chunk-9-1.png)
-
-
-
-
 ```
+![](Ryerson_Capstone_Markdown_files/unnamed-chunk-8-1.PNG)
+
+![](Ryerson_Capstone_Markdown_files/unnamed-chunk-9-1.PNG)
