@@ -20,7 +20,7 @@ library(caret)
 library(maxent)
 ```
 
-## Loading datasets
+# Loading datasets
 ```{r}
 train<-read_tsv("C:/Users/james/OneDrive/Ryerson/Capstone/dataset/train.tsv")
 sentiment0<-train[which(train$Sentiment==0),][1:1000,]
@@ -46,7 +46,7 @@ train_final <- merge(train, tb, by="PhraseId",all.x = TRUE)
 train_final[is.na(train_final)]<-0
 ```
 
-## View and exam the dataset
+# View and exam the dataset
 ```{r}
 glimpse(train_final)
 length(unique(train_final$PhraseId))
@@ -117,7 +117,7 @@ Bottomten_words(train_final)
 ```
 ![](Ryerson_Capstone_Markdown_files/unnamed-chunk-7-2.png)
 
-# Let's locate and replace some of unknown characters: n't, rrb, lrb
+## Let's locate and replace some of unknown characters: n't, rrb, lrb
 
 ```{r}
 train_final %>%
@@ -130,7 +130,7 @@ train[which(train$PhraseId %in% c(1283,1225)),]
 
 After those words lookups, we found that "n't" was just an acronym of the word "not" and "lrb" and "rrb" stand for left and right round bracket. We are only going to replace "n't" with "not" as there is only 1 form for "lrb" and "rrb".
 
-# Replacement of "n't"
+## Replacement of "n't"
 ```{r}
 train_final$Phrase<-gsub("n't","not",train_final$Phrase)
 ```
@@ -172,8 +172,8 @@ train_m_cleaned_combined<-cbind(train_m_cleaned,train_final[,5:16])
 ```
 
 
-## Training data without pre-processing & 10-fold cross validation
-# Naive Bayes, MaxEntropy, SVM
+# Training data without pre-processing & 10-fold cross validation
+## Naive Bayes, MaxEntropy, SVM
 ```{r}
 n<-nrow(train_sparse)
 K<-5
